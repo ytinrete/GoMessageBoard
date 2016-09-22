@@ -8,7 +8,8 @@ import(
     "errors"
     "net/http"
     "sync"
-    "io/ioutil" 
+    "io/ioutil"
+    "time"
     // "strings"
 )
 
@@ -79,6 +80,8 @@ func saveToFile(t Thread) (Thread, error) {
 			t.Author = "Anonymous"
 		}
 	}
+	current_time := time.Now().UTC()
+	t.Time = string(current_time.Format("2006-01-02 15:04:05"))
 	var line []byte
 	if res, err := json.Marshal(t); err !=nil{
         return Thread{}, err
