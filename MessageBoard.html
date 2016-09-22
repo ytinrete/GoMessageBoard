@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>MessageBoard &gt; &lt;</title>
+  <style type="text/css">
+
+    html, body {
+        display: block;
+        background: #0ac9f6;
+        font-family: "Comic Sans MS";
+    }
+    .container{
+        position: relative;
+        width: 800px;
+        height: 100%;
+        margin: 0 auto;
+    }
+
+    .title{
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 0px;
+        color: #ffffff;
+        font-size: 60px;
+    }
+
+    #list_area{
+        margin-top: 40px;
+        border-style: solid;
+        font-size: 20px;
+        width: 794px;
+        height: 600px;
+        color: #FFFFFF;
+        overflow-y: scroll;
+    }
+
+    li{
+      padding-right: 10px;
+      padding-left: 10px;
+      padding-top: 20px;
+      padding-bottom: 20px;
+      border-style: solid;
+      font-size: 20px;
+      list-style: none;
+      border-left: none;
+      border-right: none;
+      border-top: none;
+    }
+
+    .thread_content .thread_content_translate{
+      font-size: 20px;
+      font-family: "Comic Sans MS";
+      color: #ffffff;
+    }
+
+    .thread_show{
+        margin-left: 650px;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        font-size: 20px;
+        width: 80px;
+        height: 40px;
+        color: #784512;
+        font-family: "Comic Sans MS";
+    }
+
+    textarea{
+        font-size: 20px;
+        width: 780px;
+        height: 80px;
+        padding: 10px;
+        margin: 0px;
+        border: none;
+    }
+
+    h2{
+        font-size: 22px;
+        margin-left: 0px;
+        color: #FFFFFF;
+    }
+
+    #btn_send{
+        font-size: 20px;
+        width: 140px;
+        height: 40px;
+        color: #784512;
+        font-family: "Comic Sans MS";
+        float:right;
+    }
+    #author_area{
+      float:left;
+      height: 40px;
+      font-size: 20px;
+      font-family: "Comic Sans MS";
+      color: #ffffff;
+    }
+    </style>
+  <script type="text/javascript">
+        // String.prototype.charCodeUTF32 = function(){   
+        //     return ((((this.charCodeAt(0)-0xD800)*0x400) + (this.charCodeAt(1)-0xDC00) + 0x10000));
+        // };
+        var meow = String.fromCharCode(21941)
+        var uc0 = String.fromCharCode(8251)//0  ※  8251   203b
+        var uc1 = String.fromCharCode(9651)//1  △  9651   25b3
+        var uc2 = String.fromCharCode(9671)//2  ◇  9671   25c7
+        var uc3 = String.fromCharCode(9675)//3  ○  9675   25cb
+        var uc4 = String.fromCharCode(9678)//4  ◎  9678   25ce
+        var uc5 = String.fromCharCode(9679)//5  ●  9679   25cf
+        var uc6 = String.fromCharCode(9734)//6  ☆  9734   2606
+        var uc7 = String.fromCharCode(9733)//7  ★  9733   2605
+        var uc8 = String.fromCharCode(12290)//8  。  12290  3002
+        var uc9 = String.fromCharCode(21596)//9  呜  21596  545c
+        var uc10 = String.fromCharCode(21714)//10 哒  21714  54d2
+        var uc11 = String.fromCharCode(21780)//11 唔  21780  5514
+        var uc12 = String.fromCharCode(26114)//12 昂  26114  6602
+        var uc13 = String.fromCharCode(65281)//13 ！  65281  ff01
+        var uc14 = String.fromCharCode(65311)//14 ？  65311  ff1f
+        var uc15 = String.fromCharCode(65374)//15 ～  65374  ff5e
+
+        function clearArea(){
+            document.getElementById("before").value=""
+            document.getElementById("after").value=""
+        }
+        function doEncode(text){
+            var res = meow
+            for (var i = 0; i < text.length; i++) {
+                
+                var uni16 = text.charCodeAt(i).toString(16)
+                var appendRes = ""
+
+                for (var j=0; j<uni16.length; j++){
+                    switch(uni16.charCodeAt(j)){
+                       case 48:
+                           appendRes = appendRes + uc0
+                           break
+                       case 49:
+                           appendRes = appendRes + uc1
+                           break
+                       case 50:
+                           appendRes = appendRes + uc2
+                           break
+                       case 51:
+                           appendRes = appendRes + uc3
+                           break
+                       case 52:
+                           appendRes = appendRes + uc4
+                           break
+                       case 53:
+                           appendRes = appendRes + uc5
+                           break
+                       case 54:
+                           appendRes = appendRes + uc6
+                           break
+                       case 55:
+                           appendRes = appendRes + uc7
+                           break
+                       case 56:
+                           appendRes = appendRes + uc8
+                           break
+                       case 57:
+                           appendRes = appendRes + uc9
+                           break
+                       case 97:
+                           appendRes = appendRes + uc10
+                           break
+                       case 98:
+                           appendRes = appendRes + uc11
+                           break
+                       case 99:
+                           appendRes = appendRes + uc12
+                           break
+                       case 100:
+                           appendRes = appendRes + uc13
+                           break
+                       case 101:
+                           appendRes = appendRes + uc14
+                           break
+                       case 102:
+                           appendRes = appendRes + uc15
+                           break
+                       default:
+                           break
+                       }
+                }
+                if (appendRes!=""){
+                    res = res + appendRes + meow
+                }
+            }
+            return res
+        }
+        function doDecode(text){
+            var res = ""
+            var words = text.split(meow)
+            for (var i = 0; i < words.length ; i++) {
+                var word = words[i]
+                var uni16 = ""
+                if(word != ""){
+                    for (var j = 0; j < word.length; j++) {
+                        switch(word.charCodeAt(j))
+                        {
+                        case 8251:
+                            uni16 = uni16 + '0'
+                            break
+                        case 9651:
+                            uni16 = uni16 + '1'
+                            break
+                        case 9671:
+                            uni16 = uni16 + '2'
+                            break
+                        case 9675:
+                            uni16 = uni16 + '3'
+                            break
+                        case 9678 :
+                            uni16 = uni16 + '4'
+                            break
+                        case 9679:
+                            uni16 = uni16 + '5'
+                            break
+                        case 9734 :
+                            uni16 = uni16 + '6'
+                            break
+                        case 9733:
+                            uni16 = uni16 + '7'
+                            break
+                        case 12290:
+                            uni16 = uni16 + '8'
+                            break
+                        case 21596:
+                            uni16 = uni16 + '9'
+                            break
+                        case 21714 :
+                            uni16 = uni16 + 'a'
+                            break
+                        case 21780 :
+                            uni16 = uni16 + 'b'
+                            break
+                        case 26114:
+                            uni16 = uni16 + 'c'
+                            break
+                        case 65281:
+                            uni16 = uni16 + 'd'
+                            break
+                        case 65311:
+                            uni16 = uni16 + 'e'
+                            break
+                        case 65374:
+                            uni16 = uni16 + 'f'
+                            break
+
+                        }
+                    }
+                    if(uni16 != ""){
+                        var int10 = parseInt(uni16, 16)
+                        if(int10 != NaN){
+                            res = res + String.fromCharCode(int10)
+                        }
+                    }
+                }
+            }
+            if(res == ""){
+                res = "啊咧咧，结果为空，肯定是哪里有问题哦QAQ...The result is empty, there must be something wrong QAQ..."
+            }
+            return res
+        }
+
+        function show(node){
+          var isShow
+          if(node.value=="true"){
+            isShow = true
+          }else{
+            isShow = false
+          }
+          var parentNode=node.parentNode;
+          var childNodes = parentNode.childNodes;
+          for(var i=0; i<childNodes.length;i++){
+            var curNode = childNodes[i]
+            if(curNode.className == "thread_content_translate"){
+              if(isShow){
+                node.value = false
+                node.innerHTML = "hide"
+                curNode.style.display="block"
+              }else{
+                node.value = true
+                node.innerHTML = "show"
+                curNode.style.display="none"
+              }
+            }
+          }
+        }
+
+        function textCheck(text){
+          return text.replace(/(?:\r\n|\r|\n)/g, '<br />')
+        }
+
+        function getTime(timestamp){
+          if(timestamp == null|| timestamp ==""){
+            return "神秘的未知时间 0.0"
+          }
+          return new Date(parseInt(timestamp) * 1000);  
+        }
+
+        function makeli(t){
+          var li = document.createElement("li");
+          li.setAttribute("data-field",t.content);
+          var showText = textCheck(t.content)
+
+          var content = document.createElement("div");
+          content.setAttribute("class", "thread_content")
+          content.innerHTML = t.author + ":</br>" + doEncode(showText) + "</br>" + getTime(t.time)
+          li.appendChild(content);
+
+          var button = document.createElement("button");
+          button.setAttribute("class", "thread_show")
+          button.setAttribute("value", "true")
+          button.setAttribute("onclick", "show(this)")
+          button.innerHTML = "show"
+          li.appendChild(button)
+
+          var content_tran = document.createElement("div");
+          content_tran.setAttribute("class", "thread_content_translate")
+          content_tran.innerHTML = t.author + ":</br>" + showText + "</br>" + getTime(t.time)
+          content_tran.style.display = "none"
+          li.appendChild(content_tran);
+
+          return li
+        }
+
+        function addretry(msg){
+          var ul = document.getElementById("list")
+          while (ul.firstChild) {
+              ul.removeChild(ul.firstChild);
+          }
+          var li = document.createElement("li");
+
+          var content = document.createElement("div");
+          content.setAttribute("class", "thread_content")
+          content.innerHTML = msg//"Enconter an error, please retry! 失败啦，请重试！"
+          li.appendChild(content);
+
+          var button = document.createElement("button");
+          button.setAttribute("class", "thread_show")
+          button.setAttribute("onclick", "")
+          button.innerHTML = "retry"
+          li.appendChild(button)
+
+          ul.appendChild(li)
+        }
+
+        function addli(list){
+          var ul = document.getElementById("list")
+          while (ul.firstChild) {
+              ul.removeChild(ul.firstChild);
+          }
+          for (var i = 0; i < list.length; i++) {
+            ul.appendChild(makeli(list[i]))
+          }
+        }
+
+        function createXmlHttpRequest(){    
+            if(window.ActiveXObject){ //IE 
+                return new ActiveXObject("Microsoft.XMLHTTP");    
+            }else if(window.XMLHttpRequest){ 
+                return new XMLHttpRequest();    
+            }    
+        }
+
+        function handleSuccessList(text){
+          if(text==null||text==""){
+            addretry("empty return 拿到空返回哟" +" Enconter an error, please retry! 失败啦，请重试！")
+            return
+          }
+          try {
+              var arr = JSON.parse(text);
+              var list = []
+              for(i = arr.length -1; i >=0 ; i--) {
+                var newObj = {}
+                newObj.author = arr[i].Author
+                newObj.content = arr[i].Content
+                newObj.time = arr[i].Time
+                list.push(newObj)
+              }
+              addli(list)
+          }
+          catch(err) {
+              addretry("handle json error 处理json的时候出问题了哦" +" Enconter an error, please retry! 失败啦，请重试！")
+              return
+          }
+        }
+
+        function getList(){
+          var xmlHttp = new createXmlHttpRequest();
+          xmlHttp.onreadystatechange = function() { 
+              if (xmlHttp.readyState == 4){
+                if(xmlHttp.status == 200){
+                  handleSuccessList(xmlHttp.responseText)
+                }else{
+                  addretry(xmlHttp.status +" Enconter an error, please retry! 失败啦，请重试！")
+                }
+              }
+          }
+          xmlHttp.open("GET", "/go/MessageBoard/getList", true); // true for asynchronous 
+          xmlHttp.send(null);
+        }
+
+        function postThread(){
+
+          var contentNode = document.getElementById("content")
+          var content = contentNode.value
+          if(content == ""){
+              alert("the message is empty!输入内容为空喔！")
+              return
+          }
+          var authorNode = document.getElementById("author")
+          var author = authorNode.value
+
+          var newObj = {}
+          newObj.Author = author
+          newObj.Content = content
+
+          var jsonStr = JSON.stringify(newObj)
+          var xmlHttp = new createXmlHttpRequest();
+          xmlHttp.onreadystatechange = function() { 
+              if (xmlHttp.readyState == 4){
+                if(xmlHttp.status == 200){
+                  handleSuccessList(xmlHttp.responseText)
+                }else{
+                  addretry(xmlHttp.status +" Enconter an error, please retry! 失败啦，请重试！")
+                }
+              }
+          }
+          xmlHttp.open("POST", "/go/MessageBoard/addThread", true); // true for asynchronous 
+          xmlHttp.send(jsonStr);
+        }
+
+    </script></head>
+<body>
+  <div class="container">
+    <h1 class="title">This is the MessageBoard</h1>
+    <div>
+      <div id="list_area">
+        <ul id="list" style="margin:0px;padding:0px;">
+        </ul>
+      </div>
+      <h2>
+        Input输入:
+      </h2>
+      <textarea id="content"></textarea>
+      <div style="margin-top:20px;margin-bottom:20px;">
+        <div id="author_area">
+          Author用户名:
+          <input type="text" id="author" style="height: 34px;font-size: 20px;margin-left:20px;font-family: "Comic Sans MS";"></div>
+        <button id="btn_send" onclick="postThread()">Send发送~</button>
+      </div>
+    </div>
+  </div>
+</body>
+<script type="text/javascript">
+  // getList()
+  var aaa = [{author:"aaa", content:"bbb\nasdf\nas\ndf", time:1474546545}]
+  addli(aaa)
+
+</script>
+
+</html>
