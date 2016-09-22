@@ -16,7 +16,7 @@ import(
 type Thread struct{
 	Author string
 	Content string
-	Time string
+	Time int64
 }
 
 type List struct{
@@ -80,8 +80,9 @@ func saveToFile(t Thread) (Thread, error) {
 			t.Author = "Anonymous"
 		}
 	}
-	current_time := time.Now().UTC()
-	t.Time = string(current_time.Format("2006-01-02 15:04:05"))
+	// current_time := time.Now().UTC()
+	// t.Time = string(current_time.Format("2006-01-02 15:04:05"))
+	t.Time = time.Now().Unix()
 	var line []byte
 	if res, err := json.Marshal(t); err !=nil{
         return Thread{}, err
