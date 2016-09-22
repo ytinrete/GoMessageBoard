@@ -24,8 +24,10 @@ type List struct{
 
 func (l* List)add(t Thread) error {
 	l.mux.Lock()
-	l.List = append(l.List, t)
-	err := saveToFile(t)
+	t2, err := saveToFile(t)
+	if err == nil{
+		l.List = append(l.List, t2)
+	}
 	defer l.mux.Unlock()
 	return err
 }
@@ -67,10 +69,10 @@ func loadFromFile() error {
     return nil
 }
 
-func saveToFile(t Thread) error {
+func saveToFile(t Thread) (Thread, error) {
 
 	if t.Author == "" && t.Content == ""{
-		return errors.New("empty data")
+		return Thread{}, errors.New("empty data")
 	}else{
 		if t.Author ==""{
 			t.Author = "Anonymous"
@@ -78,21 +80,19 @@ func saveToFile(t Thread) error {
 	}
 	var line []byte
 	if res, err := json.Marshal(t); err !=nil{
-        return err
+        return Thread{}, err
 	}else{
 		line = res
 	}
 
 	file, err := os.OpenFile("data.txt", os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
-	    
-        return err
+        return Thread{}, err
 	}
 	defer file.Close()
 	w := bufio.NewWriter(file)
 	fmt.Fprintln(w, string(line))
-	return w.Flush()
-	
+	return t, w.Flush()
 }
 
 func getListJsonStr()(string, error) {
