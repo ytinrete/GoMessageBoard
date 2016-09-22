@@ -15,6 +15,7 @@ import(
 type Thread struct{
 	Author string
 	Content string
+	Time string
 }
 
 type List struct{
@@ -200,25 +201,6 @@ func main() {
 		fmt.Println(line)
 	}
 	fmt.Println("----------------")
-	
-
-	
-
-	// t1 := Thread{
-	// 	Author:"lee",
-	// 	Content:"111",
-	// }
-
-	// t2 := Thread{
-	// 	Author:"bob",
-	// 	Content:"222",
-	// }
-
-	// saveToFile(t1)
-	// saveToFile(t2)
-	
-
-	// ioutil.WriteFile("data.txt", []byte("aaa"), 0600)
 
 	http.HandleFunc("/MessageBoard/getList", handleGetList)
 	http.HandleFunc("/MessageBoard/addThread", handleAddThread)
